@@ -1,12 +1,8 @@
 const { Sequelize } = require('sequelize');
 
-const sequelize = new Sequelize(process.env.DATABASE_URL || {
+// Para producción en Render, usa DATABASE_URL directamente
+const sequelize = new Sequelize(process.env.DATABASE_URL, {
   dialect: 'postgres',
-  host: process.env.DB_HOST || 'localhost',
-  port: process.env.DB_PORT || 5432,
-  username: process.env.DB_USER || 'postgres',
-  password: process.env.DB_PASS || 'password',
-  database: process.env.DB_NAME || 'barberia_db',
   logging: false,
   dialectOptions: {
     ssl: process.env.NODE_ENV === 'production' ? {
@@ -15,5 +11,10 @@ const sequelize = new Sequelize(process.env.DATABASE_URL || {
     } : false
   }
 });
+
+// Verificar conexión
+sequelize.authenticate()
+  .then(() => console.log('✅ Conexión a la BD establecida'))
+  .catch(err => console.error('❌ Error conectando a la BD:', err));
 
 module.exports = sequelize;
